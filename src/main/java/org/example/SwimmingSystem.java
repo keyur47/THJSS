@@ -463,5 +463,30 @@ public class SwimmingSystem {
             System.out.println("Learner not found.");
         }
     }
+    /**
+     * Generates reports about learners  activities with booked, cancelled and attended lessons.
+     */
+    private void GenerateUserLearnerReport() {
+        System.out.println("-".repeat(100));
+        System.out.format("%-12s%-8s%-5s%-10s%-12s%-8s%-8s%-10s%-8s%-8s%n", "Learner ID", "Name", "Age", "Gender", "GradeLevel", "Booked", "Cancel", "Attended", "Time", "Coach");
+        System.out.println("-".repeat(100));
+        IntStream.range(0, learners.size()).forEach(i -> {
+            Learner learner = learners.get(i);
+            Lesson lesson = lessons.get(i);
+            System.out.format("%-12s%-8s%-5s%-10s%-12s%-8s%-8s%-10s%-8s%-8s%n", learner.getLearnerID(), learner.getName(), learner.getAge(), learner.getGender(), learner.getGradeLevel(), learner.getTotalBookedLessons(), learner.getTotalCancelledLessons(), learner.getTotalAttendedLessons(), lesson.getTimeSlot(), lesson.getCoach().getName());
+        });
+    }
 
+    /**
+     * Generates report about  each coaches with their names and respective ratings.
+     */
+    private void GenerateCoachReport() {
+        System.out.println("-".repeat(40));
+        System.out.format("%-20s%-20s%n", "Coach Name", "Average Rating");
+        System.out.println("-".repeat(40));
+        IntStream.range(0, coaches.size()).forEach(i -> {
+            Coach coach = coaches.get(i);
+            System.out.format("%-20s%-20s%n", coach.getName(), coach.getCoachAverageRating());
+        });
+    }
 }
