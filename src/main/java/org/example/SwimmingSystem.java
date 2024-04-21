@@ -373,5 +373,95 @@ public class SwimmingSystem {
     }
 
 
+    /**
+     * Attend the booked lessonm.
+     */
+
+    private void AttendLesson() {
+        System.out.println("Enter learner ID for attending the lesson: ");
+        int learnerId = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        Learner learner = findLearnerdetailId(learnerId);
+
+        if (learner == null) {
+            System.out.println("Learner not found.");
+            return;
+        }
+        // Display the learner's booked lessons
+        BookedLessonsByLearner(learnerId);
+
+        // Prompt for lesson ID to attend
+        System.out.println("Enter the lesson ID you want to attend:");
+        int lessonId = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        // Find the lesson
+        Optional<Lesson> lessonToAttend = findLessonDetailsId(lessonId);
+
+        if (lessonToAttend.isPresent()) {
+            // Attend the lesson
+            learner.AttendLesson(lessonToAttend.get());
+            System.out.println("Lesson attended successfully.");
+
+            System.out.println("Enter your rating (1 to 5): ");
+            int rating = scanner.nextInt();
+            if (rating < 1 || rating > 5) {
+                System.out.println("Invalid rating. Rating must be between 1 and 5.");
+                return;
+            }
+
+            scanner.nextLine(); // Consume newline
+            System.out.println("Enter your review about lesson you have attended:");
+            String review = scanner.nextLine();
+
+            learner.addFeedbackForLesson(lessonToAttend.get(), review);
+            learner.updateingRatingForLesson(lessonToAttend.get(), rating);
+            System.out.println("Feedback and rating submitted. Thank you!");
+            // Pass rating directly to coach
+            lessonToAttend.get().getCoach().updateRating(rating);
+        }
+
+    }
+
+    /**
+     * find the learner  information by their learner id
+     *
+     * @param learnerId
+     */
+    private Learner findLearnerdetailId(int learnerId) {
+        return learners.stream().filter(learner -> learner.getLearnerID() == learnerId).findFirst().orElse(null);
+    }
+
+    /**
+     * find the lesson information by lesson id
+     *
+     * @param lessonId
+     */
+    private Optional<Lesson> findLessonDetailsId(int lessonId) {
+        return lessons.stream().filter(lesson -> lesson.getLessonID() == lessonId).findFirst();
+    }
+
+    /**
+     * Display the booked lesson information by learner using learner id
+     *
+     * @param learnerId
+     */
+    private void BookedLessonsByLearner(int learnerId) {
+        Learner learner = findLearnerdetailId(learnerId);
+        if (learner != null) {
+            System.out.println("Booked Lessons for Learner with ID " + learnerId + ":");
+            for (Lesson lesson : learner.getBookedLessons()) {
+                System.out.println("Lesson ID: " + lesson.getLessonID());
+                System.out.println("Day: " + lesson.getDay());
+                System.out.println("Time: " + lesson.getTimeSlot());
+                System.out.println("Coach: " + lesson.getCoach().getName());
+                System.out.println("Grade Level: " + lesson.getGradeLevel());
+                System.out.println("------------------------");
+            }
+        } else {
+            System.out.println("Learner not found.");
+        }
+    }
 
 }
