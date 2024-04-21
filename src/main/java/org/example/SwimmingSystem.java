@@ -198,7 +198,6 @@ public class SwimmingSystem {
         }
     }
 
-
     /**
      * Booking system for book the lesson.
      */
@@ -265,5 +264,114 @@ public class SwimmingSystem {
         }
 
     }
+
+    /**
+     * change or cancle the booking.
+     */
+
+    private void ChangeOrCancelBooking() {
+
+        System.out.println("Select an Option: ");
+        System.out.println("1. Change the lesson");
+        System.out.println("2. Cancel the Lesson: ");
+        System.out.println("Enter Your Choice: ");
+
+        int opt = scanner.nextInt();
+        scanner.nextLine(); // consume new line
+
+        switch (opt) {
+            case 1 -> ChangeBookedLesson();
+            case 2 -> CancelBookedLesson();
+            default -> System.out.println("Invalid option. Please try again.");
+        }
+
+    }
+
+
+    /**
+     * Change the previous booked lesson.
+     */
+
+    private void ChangeBookedLesson() {
+        System.out.println("Enter learner ID for change or cancel the booking: ");
+        int learnerId = scanner.nextInt();
+
+        Learner learner = findLearnerdetailId(learnerId);
+
+        if (learner == null) {
+            System.out.println("Learner not found.");
+            return;
+        }
+        // Display the learner's booked lessons
+        BookedLessonsByLearner(learnerId);
+
+        // Prompt for lesson ID to  change
+        System.out.println("Enter the lesson ID you want to change or change:");
+        int oldLessonId = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        // Find the lesson
+        Optional<Lesson> oldLesson = findLessonDetailsId(oldLessonId);
+
+        if (oldLesson.isPresent()) {
+            // Prompt for new lesson ID
+            System.out.println("Enter the new lesson ID:");
+            int newLessonId = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            // Find the new lesson
+            Optional<Lesson> newLesson = findLessonDetailsId(newLessonId);
+
+            if (newLesson.isPresent()) {
+                // change the booking
+                learner.displayChangeBooking(oldLesson.get(), newLesson.get());
+                System.out.println("Booking changed successfully.");
+            } else {
+                System.out.println("New lesson not found.");
+            }
+        } else {
+            System.out.println("Old lesson not found.");
+        }
+
+
+    }
+
+    /**
+     * Cancel the booked lesson.
+     */
+
+    private void CancelBookedLesson() {
+        System.out.println("Enter learner ID for change or cancel the booking: ");
+        int learnerId = scanner.nextInt();
+
+        Learner learner = findLearnerdetailId(learnerId);
+
+
+        if (learner == null) {
+            System.out.println("Learner not found.");
+            return;
+        }
+        // Display the learner's booked lessons
+        BookedLessonsByLearner(learnerId);
+
+        // Prompt for lesson ID to cancel
+        System.out.println("Enter the lesson ID you want to cancel:");
+        int lessonId = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        // Find the lesson
+        Optional<Lesson> lessonToCancel = findLessonDetailsId(lessonId);
+
+        if (lessonToCancel.isPresent()) {
+            learner.cancelLesson(lessonToCancel.get());
+            System.out.println("Booking canceled successfully.");
+        } else {
+            System.out.println("Lesson not found.");
+        }
+
+
+    }
+
+
 
 }
