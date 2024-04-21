@@ -9,6 +9,10 @@ import java.util.stream.IntStream;
  */
 public class SwimmingSystem {
 
+    private final List<Coach> coaches = new ArrayList<>();
+    private final List<Learner> learners = new ArrayList<>();
+    private final List<Lesson> lessons = new ArrayList<>();
+
     private int incrementessonId;
     private final Scanner scanner = new Scanner(System.in);
 
@@ -132,5 +136,134 @@ public class SwimmingSystem {
         System.out.println("Use Your Learner ID while booking lessons");
     }
 
+
+    /**
+     * Displays the timetable by Day.
+     */
+    public void timeTableByDay(String day) {
+        System.out.println("Timetable for " + day + ":");
+        for (Lesson lesson : lessons) {
+            if (lesson.getDay().equalsIgnoreCase(day)) {
+                System.out.println("-".repeat(70));
+                System.out.println("Time: " + lesson.getTimeSlot() + ", Grade Level: " + lesson.getGradeLevel() + ", Coach: " + lesson.getCoach().getName() + ", Lesson ID: " + lesson.getLessonID() + ", Vacancy: " + (4 - lesson.getLearners().size()));
+            }
+        }
+    }
+
+    /**
+     * Displays the timetable by GradeLevel.
+     */
+    public void timeTableByGrade(int gradeLevel) {
+        System.out.println("Timetable for Grade " + gradeLevel + ":");
+        for (Lesson lesson : lessons) {
+            if (lesson.getGradeLevel() == gradeLevel) {
+                System.out.println("-".repeat(70));
+                System.out.println("Day: " + lesson.getDay() + ", TimeSlot: " + lesson.getTimeSlot() + ", Coach: " + lesson.getCoach().getName() + ", Lesson ID: " + lesson.getLessonID() + ", Vacancy: " + (4 - lesson.getLearners().size()));
+            }
+        }
+    }
+
+    /**
+     * Displays the timetable by Coach.
+     */
+    public void timetableByCoach(String coachName) {
+        System.out.println("Timetable for Coach " + coachName + ":");
+        for (Lesson lesson : lessons) {
+            if (lesson.getCoach().getName().equalsIgnoreCase(coachName)) {
+                System.out.println("-".repeat(70));
+                System.out.println("Day: " + lesson.getDay() + ", TimeSlot: " + lesson.getTimeSlot() + ", GradeLevel: " + lesson.getGradeLevel() + ", Lesson ID: " + lesson.getLessonID() + ", Vacancy: " + (4 - lesson.getLearners().size()));
+            }
+        }
+    }
+
+    /**
+     * Display Available Days and Time slots
+     */
+    public void availableDaysAndTimeSlots() {
+        System.out.println("Available Days and Times:");
+        System.out.println("Monday: 4-5pm, 5-6pm, 6-7pm");
+        System.out.println("Wednesday: 4-5pm, 5-6pm, 6-7pm");
+        System.out.println("Friday: 4-5pm, 5-6pm, 6-7pm");
+        System.out.println("Saturday: 2-3pm, 3-4pm");
+    }
+
+    /**
+     * Display Available coaches with their ratings
+     */
+    public void availableCoachRating() {
+        System.out.println("Available Coaches:");
+        for (Coach coach : coaches) {
+            double averageRating = coach.getCoachAverageRating();
+            System.out.println(coach.getName() + " -Rating: " + averageRating);
+        }
+    }
+
+
+    /**
+     * Booking system for book the lesson.
+     */
+    private void BookingLesson() {
+        System.out.println("Select an option:");
+        System.out.println("1. Display timetable by day");
+        System.out.println("2. Display timetable by grade");
+        System.out.println("3. Display timetable by coach");
+        System.out.println("Enter Your Choice:");
+        int option = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+        switch (option) {
+            case 1 -> {
+                availableDaysAndTimeSlots();
+                System.out.println("Enter Day: ");
+                String day = scanner.nextLine();
+                timeTableByDay(day);
+                break;
+            }
+            case 2 -> {
+                System.out.println("Enter GradeLevel: ");
+                int grade = scanner.nextInt();
+                scanner.nextLine(); // Consume newline
+                timeTableByGrade(grade);
+                break;
+            }
+            case 3 -> {
+                availableCoachRating();
+                System.out.println("Enter Coach's Name: ");
+                String coachName = scanner.nextLine();
+                timetableByCoach(coachName);
+                break;
+            }
+            default -> System.out.println("Invalid option. Please try again.");
+        }
+        System.out.println("Enter Learner ID: ");
+        int id = scanner.nextInt();
+        Learner learner = learners.stream().filter(l -> l.getLearnerID() == id).findFirst().orElse(null);
+
+        if (learner == null) {
+            System.out.println("Learner not found.");
+            return;
+        }
+
+        System.out.print("Enter lesson ID: ");
+        int lessonId = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        // Check if the lesson ID is already booked by the learner
+        if (learner.getBookedLessons().stream().anyMatch(lesson -> lesson.getLessonID() == lessonId)) {
+            System.out.println("You have already booked this lesson. Please choose another lesson.");
+            return;
+        }
+
+        Optional<Lesson> optionalLesson = lessons.stream().filter(l -> l.getLessonID() == lessonId).findFirst();
+
+        if (optionalLesson.isPresent()) {
+            Lesson lesson = optionalLesson.get();
+            lesson.BookLesson(learner);
+            learner.BookLesson(lesson);
+            System.out.println("Lesson booked successfully.");
+        } else {
+            System.out.println("Failed to book the lesson. Please check the details and try again.");
+        }
+
+    }
 
 }
